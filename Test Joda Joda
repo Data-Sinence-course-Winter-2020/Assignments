@@ -1,0 +1,431 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Copy of FINAL Sampeling Books V8 - Clean 2.0",
+      "provenance": [],
+      "collapsed_sections": [],
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Data-Sinence-course-Winter-2020/Assignments/blob/master/Test%20Joda%20Joda\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "vhN5S8PBkYfU",
+        "colab_type": "code",
+        "outputId": "0d0354ce-0b10-4302-82cc-9b010d7a9354",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 117
+        }
+      },
+      "source": [
+        "#V8 - Clean code 2.0 *\n",
+        "import nltk\n",
+        "import random\n",
+        "import numpy as np \n",
+        "import pandas as pd \n",
+        "nltk.download('gutenberg')\n",
+        "nltk.download('punkt')\n",
+        "nltk.download('stopwords')\n",
+        "from nltk.probability import FreqDist\n",
+        "import matplotlib.pyplot as plt\n",
+        "from nltk.corpus import stopwords\n",
+        "set(stopwords.words('english'))\n",
+        "from nltk.tokenize import word_tokenize\n",
+        "import re\n",
+        "import string\n",
+        "from nltk.stem import PorterStemmer\n",
+        "from nltk.tokenize import sent_tokenize, word_tokenize\n",
+        "from random import seed\n",
+        "from random import randint\n",
+        "from random import shuffle\n",
+        "import array\n",
+        "import numpy as np \n",
+        "from sklearn.feature_extraction.text import CountVectorizer\n"
+      ],
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "[nltk_data] Downloading package gutenberg to /root/nltk_data...\n",
+            "[nltk_data]   Package gutenberg is already up-to-date!\n",
+            "[nltk_data] Downloading package punkt to /root/nltk_data...\n",
+            "[nltk_data]   Package punkt is already up-to-date!\n",
+            "[nltk_data] Downloading package stopwords to /root/nltk_data...\n",
+            "[nltk_data]   Package stopwords is already up-to-date!\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "sSpLmeko3E-s",
+        "colab_type": "code",
+        "outputId": "d13bce96-e65f-4955-ad3f-216a9cd8a64f",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 318
+        }
+      },
+      "source": [
+        "nltk.corpus.gutenberg.fileids() #define list of possible books from gutenberg\n",
+        "['austen-emma.txt', 'austen-persuasion.txt', 'austen-sense.txt', 'bible-kjv.txt',\n",
+        "'blake-poems.txt', 'bryant-stories.txt', 'burgess-busterbrown.txt',\n",
+        "'carroll-alice.txt', 'chesterton-ball.txt', 'chesterton-brown.txt',\n",
+        "'chesterton-thursday.txt', 'edgeworth-parents.txt', 'melville-moby_dick.txt',\n",
+        "'milton-paradise.txt', 'shakespeare-caesar.txt', 'shakespeare-hamlet.txt',\n",
+        "'shakespeare-macbeth.txt', 'whitman-leaves.txt']"
+      ],
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "['austen-emma.txt',\n",
+              " 'austen-persuasion.txt',\n",
+              " 'austen-sense.txt',\n",
+              " 'bible-kjv.txt',\n",
+              " 'blake-poems.txt',\n",
+              " 'bryant-stories.txt',\n",
+              " 'burgess-busterbrown.txt',\n",
+              " 'carroll-alice.txt',\n",
+              " 'chesterton-ball.txt',\n",
+              " 'chesterton-brown.txt',\n",
+              " 'chesterton-thursday.txt',\n",
+              " 'edgeworth-parents.txt',\n",
+              " 'melville-moby_dick.txt',\n",
+              " 'milton-paradise.txt',\n",
+              " 'shakespeare-caesar.txt',\n",
+              " 'shakespeare-hamlet.txt',\n",
+              " 'shakespeare-macbeth.txt',\n",
+              " 'whitman-leaves.txt']"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 5
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "2T5XtZ8f3k4Q",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "#choosing 7 books in list in lower case\n",
+        "#origin is the origin veriosn of chosen books\n",
+        "origin = [nltk.corpus.gutenberg.raw('austen-emma.txt'), nltk.corpus.gutenberg.raw('milton-paradise.txt'), nltk.corpus.gutenberg.raw('chesterton-ball.txt') , nltk.corpus.gutenberg.raw('melville-moby_dick.txt') , nltk.corpus.gutenberg.raw('edgeworth-parents.txt') , nltk.corpus.gutenberg.raw('bryant-stories.txt') , nltk.corpus.gutenberg.raw('whitman-leaves.txt') ]\n",
+        "books = [nltk.corpus.gutenberg.raw('austen-emma.txt').lower(), nltk.corpus.gutenberg.raw('milton-paradise.txt').lower(), nltk.corpus.gutenberg.raw('chesterton-ball.txt').lower() , nltk.corpus.gutenberg.raw('melville-moby_dick.txt').lower() , nltk.corpus.gutenberg.raw('edgeworth-parents.txt').lower() , nltk.corpus.gutenberg.raw('bryant-stories.txt').lower() , nltk.corpus.gutenberg.raw('whitman-leaves.txt').lower() ]"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "LFzuXy4HDtzH",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "#extract words from string without punctuation\n",
+        "def book_punc(i):\n",
+        "  books[i] = re.sub('['+string.punctuation+']', '', str(books[i])).split() \n"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "8cGONczTUSA9",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "#removing stop words \n",
+        "def book_stopwords(i):\n",
+        "  tokenized_words = books[i] \n",
+        "  stop_words = stopwords.words('english')\n",
+        "  books[i]=[word for word in tokenized_words if word not in stop_words]"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "nwes96wPUqS6",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "#Stemmer \n",
+        "def book_stemmer(i):\n",
+        "  ps = PorterStemmer()\n",
+        "  example_words = books[i]\n",
+        "  new = []\n",
+        "  for w in example_words:\n",
+        "   new.append(ps.stem(w))\n",
+        "  books[i]=new"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Xkw5vTMRsFCw",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "#number of words in each document\n",
+        "def book_docWords(i):\n",
+        "  documentW=len(books[i]) // 200   #number of words per documents\n",
+        "  return int(documentW)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "A4eZpJKljo-m",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "#make 200 random numbers as a pointer to each word of a document. The goal is start reading from the pointer as a random number \n",
+        "def book_randNum (documentWo,i):\n",
+        "  documentW = documentWo\n",
+        "  value = []\n",
+        "  #Preventing possible errors if each section of a book had less than 150 words\n",
+        "  if (documentW >= 150):\n",
+        "    tguess = documentW - 150\n",
+        "    for i in range (200): #should be  200\n",
+        "      tmp=randint(0,tguess)\n",
+        "      value.append(tmp)\n",
+        "  else:\n",
+        "    tguess = documentW\n",
+        "    for i in range (200): #should be 200\n",
+        "      tmp=randint(0,tguess)\n",
+        "      if (i == 199):  # should be 200 - 1\n",
+        "        tmp=tmp-documentW\n",
+        "      value.append(tmp)\n",
+        "  return value"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab_type": "code",
+        "id": "VZDc5d8ajhc6",
+        "colab": {}
+      },
+      "source": [
+        "#make a list of 200 sublist *  contains 150 words (for each book, obviously!)\n",
+        "def book_listWord (documentWs ,values , i):\n",
+        "  value = values\n",
+        "  documentW = documentWs\n",
+        "  \n",
+        "  dataset = []\n",
+        "  datasetF = []\n",
+        "  listoflists = []\n",
+        "  a_list = []\n",
+        "  lstF = []\n",
+        "\n",
+        "  res=books[i]\n",
+        "  for i in range (200):  # after testing should be 200 ~ number of sample documents for each book\n",
+        "    point = (i * documentW) + value[i]\n",
+        "    for x in range (150): #should be 150 ~ number of words in each sample\n",
+        "      dataset.append(res[point])\n",
+        "      point += 1\n",
+        "      #print(dataset) #check each line\n",
+        "      if len(dataset) == 150 :  #should be 150 ~ appending words to the dataset\n",
+        "        datasetF.append((list(dataset)))\n",
+        "        dataset.clear()      \n",
+        "        \n",
+        "  return list (datasetF)\n"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "URXh0KGWlgMW",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "#MAKE DATA FRAME FROM FINAL DATASET (which a list containst 7 list , 200 sublist and each sublist contains 150 words) ~ this data is for the whole books \n",
+        "\n",
+        "def book_lable(finList):\n",
+        "  lst = finList\n",
+        "  dct = {}\n",
+        "  booknamelist = ['Emma', 'Paradise', 'Ball', 'Moby', 'Parents' , 'Stories' ,  'Leaves']\n",
+        "  authornamelist = ['Austun', 'Milton', 'Chesterton', 'Melville', 'Edgeworth' , 'Briant' , 'Whitman']\n",
+        "  column_names = [\"BookName\" , \"AuthorName\" , \"Content\"]\n",
+        "  df2 = pd.DataFrame(columns = column_names)\n",
+        "\n",
+        "  for j in range (1): #always be 7 (7 list)\n",
+        "    for k in range (1):  #should be 200 after tests\n",
+        "      datas = { \n",
+        "      \"BookName\": booknamelist[j] , \"AuthorName\": authornamelist[j] , \"Content\": (finList[j][k ]) #from finlist[j][k] to finlist[j][k+1]\n",
+        "         }\n",
+        "      df = pd.DataFrame.from_dict(datas)\n",
+        "      frames = [df]\n",
+        "      result = pd.concat(frames)\n",
+        "      df2 = df2.append(result)\n",
+        "      \n",
+        "  #df2=' '.join(df2)\n",
+        "  return df2"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "077wVVOGtwIj",
+        "colab_type": "code",
+        "outputId": "6c2f519f-8275-4710-d3dd-371e7ec4180c",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 502
+        }
+      },
+      "source": [
+        "#The main function\n",
+        "bookGlist = []\n",
+        "bookFlist = []\n",
+        "values = []\n",
+        "\n",
+        "column_names = [\"BookName\" , \"AuthorName\" , \"Content\"]\n",
+        "dataFrame_final = pd.DataFrame(columns = column_names)\n",
+        "for i in range(1):\n",
+        "  book_punc(i)\n",
+        "  book_stopwords(i)\n",
+        "  book_stemmer(i)\n",
+        "  documentW = book_docWords(i)\n",
+        "  values = book_randNum (documentW , i)\n",
+        "  bookGlist = book_listWord(documentW , values , i)\n",
+        "  bookFlist.append(bookGlist)\n",
+        "\n",
+        "\n",
+        "print(\"DONE :: End of books process\")\n",
+        "#print(bookFlist) #Lists ins order without lable (Just for TEST)\n",
+        "\n",
+        "dataFrame_final = book_lable(bookFlist)  #labling books\n",
+        "#dataFrame_final = dataFrame_final.reset_index() #make index - for the shuffling\n",
+        "#dataFrame_finalshuff = dataFrame_final.reindex(np.random.permutation(dataFrame_final.index))  #This is the final target which has shuffled\n",
+        "print (dataFrame_final)\n",
+        "#dataFrame_finalshuff[['BookName', 'AuthorName' , 'Content']]\n",
+        "\n",
+        "#print(\"list of shuffled Dataaform\")\n",
+        "print (dataFrame_final[['BookName', 'AuthorName' , 'Content']]) #dataFrame without shuffling for test\n",
+        "#print (dataFrame_finalshuff[['BookName', 'AuthorName' , 'Content']])\n",
+        "#print (dataFrame_finalshuff[['BookName', 'AuthorName' , 'Content']])\n",
+        "#>>> dataFrame_finalshuff can be implemented for the rest of the code <<<\n",
+        "#print(bookGlist)\n",
+        "#type(dataFrame_finalshuff[['BookName', 'AuthorName' , 'Content']])\n"
+      ],
+      "execution_count": 32,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "DONE :: End of books process\n",
+            "    BookName AuthorName     Content\n",
+            "0       Emma     Austun      mother\n",
+            "1       Emma     Austun         die\n",
+            "2       Emma     Austun        long\n",
+            "3       Emma     Austun         ago\n",
+            "4       Emma     Austun  indistinct\n",
+            "..       ...        ...         ...\n",
+            "145     Emma     Austun     charact\n",
+            "146     Emma     Austun        easi\n",
+            "147     Emma     Austun      fortun\n",
+            "148     Emma     Austun     suitabl\n",
+            "149     Emma     Austun         age\n",
+            "\n",
+            "[150 rows x 3 columns]\n",
+            "    BookName AuthorName     Content\n",
+            "0       Emma     Austun      mother\n",
+            "1       Emma     Austun         die\n",
+            "2       Emma     Austun        long\n",
+            "3       Emma     Austun         ago\n",
+            "4       Emma     Austun  indistinct\n",
+            "..       ...        ...         ...\n",
+            "145     Emma     Austun     charact\n",
+            "146     Emma     Austun        easi\n",
+            "147     Emma     Austun      fortun\n",
+            "148     Emma     Austun     suitabl\n",
+            "149     Emma     Austun         age\n",
+            "\n",
+            "[150 rows x 3 columns]\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "TW_nX_Zz_3EE",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "#count = CountVectorizer()\n",
+        "#data = count.fit_transform(books)\n",
+        "#print(data)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "KrpqMW15lKVC",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "#count = CountVectorizer()\n",
+        "#data = count.fit_transform(dataFrame_final)\n",
+        "#print(data)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    }
+  ]
+}
