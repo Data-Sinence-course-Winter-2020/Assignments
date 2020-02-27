@@ -270,11 +270,11 @@ print("\n")
 print("Prediction")
 
 wcss = []
-for i in range(1,10):
+for i in range(1,100):
     kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=100, n_init=10, random_state=0)
     kmeans.fit(X)
     wcss.append(kmeans.inertia_)
-plt.plot(range(1, 10), wcss)
+plt.plot(range(1, 100), wcss)
 plt.title('Elbow Method')
 plt.xlabel('Number of clusters')
 plt.ylabel('WCSS')
